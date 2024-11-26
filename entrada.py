@@ -145,5 +145,27 @@ def tratar_dados(df):
     
     return df
 
+def salvar_precos_compra(produtos_precos):
+    """
+    Salva os preços de compra dos produtos em um arquivo Excel
+    """
+    # Converte todos os valores para float antes de salvar
+    produtos_precos = {k: float(v) for k, v in produtos_precos.items()}
+    df_precos = pd.DataFrame(list(produtos_precos.items()), columns=['product-name', 'preco_compra'])
+    caminho_precos = os.path.join('arquivos_processados', 'precos_compra.xlsx')
+    df_precos.to_excel(caminho_precos, index=False)
+
+def carregar_precos_compra():
+    """
+    Carrega os preços de compra dos produtos do arquivo Excel
+    """
+    caminho_precos = os.path.join('arquivos_processados', 'precos_compra.xlsx')
+    if os.path.exists(caminho_precos):
+        df_precos = pd.read_excel(caminho_precos)
+        # Garante que a coluna preco_compra seja float
+        df_precos['preco_compra'] = pd.to_numeric(df_precos['preco_compra'], errors='coerce')
+        return df_precos.set_index('product-name')['preco_compra'].to_dict()
+    return {}
+
 # Executa a função e mostra as informações
 df = ler_arquivos()
